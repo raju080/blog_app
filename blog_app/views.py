@@ -18,6 +18,25 @@ def home(request):
     return render(request, 'blog_app/home.html', context)
 
 
+def dashboard(request):
+    posts = Post.objects.all()
+    users = User.objects.all()
+    dict = {}
+    for user in users:
+        dict[user] = 0
+    for post in posts:
+        dict[post.author] += 1
+    dashboard = []
+    for key in dict:
+        dashboard.append((key.username, dict[key]))
+    dashboard = sorted(dashboard, key = lambda item: item[1], reverse=True)
+    dashboard = [(idx+1, item[0], item[1]) for idx, item in enumerate(dashboard)]
+    context = {
+        'dashboard': dashboard
+    }
+    return render(request, 'blog_app/dashboard.html', context)
+
+
 class PostListView(ListView):
     model = Post
     template_name = 'blog_app/home.html'  # <app>/<model>_<viewtype>.html
